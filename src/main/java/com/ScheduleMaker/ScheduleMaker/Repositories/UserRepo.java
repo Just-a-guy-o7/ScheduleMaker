@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.ScheduleMaker.ScheduleMaker.Entities.User;
 
-public interface UserRepo extends JpaRepository<User,Long>{
+public interface UserRepo extends JpaRepository<User,String>{
 
 }

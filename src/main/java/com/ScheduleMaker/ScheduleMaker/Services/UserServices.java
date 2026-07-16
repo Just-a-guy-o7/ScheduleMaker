@@ -14,9 +14,9 @@ public interface UserServices {
     boolean saveUser(User toSave);
 
     /**
-     * Retrieves a user by its identifier.
+     * Retrieves a user by its email address.
      */
-    User getUser(Long userId);
+    User getUser(String email);
 
     /**
      * Updates an existing user entity.
@@ -29,12 +29,12 @@ public interface UserServices {
     boolean deleteUser(User user);
 
     /**
-     * Deletes a user by its identifier.
+     * Deletes a user by its email address.
      */
-    boolean deleteUserById(Long userId);
+    boolean deleteUserById(String email);
 
     /**
-     * Checks whether a user exists for the given identifier.
+     * Checks whether a user exists for the given email address.
      */
-    boolean isUserById(Long userId);
+    boolean isUserById(String email);
 }

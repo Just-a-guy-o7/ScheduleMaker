@@ -45,7 +45,7 @@ public class Schedule extends Auditable {
 
     // Owner of this schedule.
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_email", referencedColumnName = "email", nullable = false)
     private User user;
 
     // User-facing label, e.g. "Semester Finals" or "GATE Prep".
