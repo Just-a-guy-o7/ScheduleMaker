@@ -2,12 +2,10 @@ package com.ScheduleMaker.ScheduleMaker.Config;
 
 
 import java.io.IOException;
-import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -55,10 +53,6 @@ public class JwtFilter extends OncePerRequestFilter{
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken(userDetails, jwt, userDetails.getAuthorities());
                     usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                    Collection<GrantedAuthority>  ath= usernamePasswordAuthenticationToken.getAuthorities();
-                    for(GrantedAuthority a:ath){
-                        System.out.println(a.getAuthority());
-                    }
                 }
             }
         }
