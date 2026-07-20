@@ -28,6 +28,7 @@ public class UserServicesImpl implements UserServices {
             userRepo.save(toSave);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -48,6 +49,7 @@ public class UserServicesImpl implements UserServices {
             userRepo.save(toUpdate);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -59,6 +61,7 @@ public class UserServicesImpl implements UserServices {
                 userRepo.delete(user);
                 return true;
             } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
         }
@@ -72,6 +75,7 @@ public class UserServicesImpl implements UserServices {
                 userRepo.deleteById(email);
                 return true;
             } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
         }

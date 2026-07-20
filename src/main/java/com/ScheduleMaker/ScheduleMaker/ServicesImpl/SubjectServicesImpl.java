@@ -27,6 +27,7 @@ public class SubjectServicesImpl implements SubjectServices {
             subjectRepo.save(toSave);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -47,6 +48,7 @@ public class SubjectServicesImpl implements SubjectServices {
             subjectRepo.save(toUpdate);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -58,6 +60,7 @@ public class SubjectServicesImpl implements SubjectServices {
                 subjectRepo.delete(subject);
                 return true;
             } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
         }
@@ -71,6 +74,7 @@ public class SubjectServicesImpl implements SubjectServices {
                 subjectRepo.deleteById(subjectId);
                 return true;
             } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
         }

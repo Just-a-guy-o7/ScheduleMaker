@@ -27,6 +27,7 @@ public class ScheduleServicesImpl implements ScheduleServices {
             scheduleRepo.save(toSave);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -47,6 +48,7 @@ public class ScheduleServicesImpl implements ScheduleServices {
             scheduleRepo.save(toUpdate);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -58,6 +60,7 @@ public class ScheduleServicesImpl implements ScheduleServices {
                 scheduleRepo.delete(schedule);
                 return true;
             } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
         }
@@ -71,6 +74,7 @@ public class ScheduleServicesImpl implements ScheduleServices {
                 scheduleRepo.deleteById(scheduleId);
                 return true;
             } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
         }

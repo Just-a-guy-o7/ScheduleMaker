@@ -27,6 +27,7 @@ public class TopicServicesImpl implements TopicServices {
             topicRepo.save(toSave);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -47,6 +48,7 @@ public class TopicServicesImpl implements TopicServices {
             topicRepo.save(toUpdate);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -58,6 +60,7 @@ public class TopicServicesImpl implements TopicServices {
                 topicRepo.delete(topic);
                 return true;
             } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
         }
@@ -71,6 +74,7 @@ public class TopicServicesImpl implements TopicServices {
                 topicRepo.deleteById(topicId);
                 return true;
             } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
         }

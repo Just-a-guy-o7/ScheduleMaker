@@ -27,6 +27,7 @@ public class DailyTaskServicesImpl implements DailyTaskServices {
             dailyTaskRepo.save(toSave);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -47,6 +48,7 @@ public class DailyTaskServicesImpl implements DailyTaskServices {
             dailyTaskRepo.save(toUpdate);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -58,6 +60,7 @@ public class DailyTaskServicesImpl implements DailyTaskServices {
                 dailyTaskRepo.delete(dailyTask);
                 return true;
             } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
         }
@@ -71,6 +74,7 @@ public class DailyTaskServicesImpl implements DailyTaskServices {
                 dailyTaskRepo.deleteById(dailyTaskId);
                 return true;
             } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
         }

@@ -56,6 +56,7 @@ public class GeminiServiceImpl implements GeminiService {
             .map(this::extractResponse)
             .onErrorResume(error -> {
                 System.err.println("Error calling Gemini API: " + error.getMessage());
+                error.printStackTrace();
 
                 return Mono.just(
                     "Error generating topics: " + error.getMessage()
@@ -106,6 +107,7 @@ public class GeminiServiceImpl implements GeminiService {
             return "No response from Gemini API";
         } catch (Exception e) {
             System.err.println("Error parsing Gemini response: " + e.getMessage());
+            e.printStackTrace();
             return "Error parsing response: " + e.getMessage();
         }
     }

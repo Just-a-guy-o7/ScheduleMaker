@@ -8,12 +8,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TopicDTO {
-    private String topicName;
-    private Integer orderIndex;
-    private Double minHours;
-    private Integer basePriority;
+@Builder
+public class SubjectNameAndSyllabusDTO {
+    private String subjectName;
+    private String subjectSyllabus;
+    
 }

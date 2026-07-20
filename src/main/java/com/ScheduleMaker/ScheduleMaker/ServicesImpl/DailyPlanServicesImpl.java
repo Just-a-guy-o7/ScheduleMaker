@@ -27,6 +27,7 @@ public class DailyPlanServicesImpl implements DailyPlanServices {
             dailyPlanRepo.save(toSave);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -47,6 +48,7 @@ public class DailyPlanServicesImpl implements DailyPlanServices {
             dailyPlanRepo.save(toUpdate);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -58,6 +60,7 @@ public class DailyPlanServicesImpl implements DailyPlanServices {
                 dailyPlanRepo.delete(dailyPlan);
                 return true;
             } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
         }
@@ -71,6 +74,7 @@ public class DailyPlanServicesImpl implements DailyPlanServices {
                 dailyPlanRepo.deleteById(dailyPlanId);
                 return true;
             } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
         }

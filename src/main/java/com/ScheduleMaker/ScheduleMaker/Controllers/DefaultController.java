@@ -4,12 +4,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ScheduleMaker.ScheduleMaker.DataTransferObjects.GetScheduleFromUserDTO;
+import com.ScheduleMaker.ScheduleMaker.DataTransferObjects.SubjectDTO;
+import com.ScheduleMaker.ScheduleMaker.DataTransferObjects.SubjectNameAndSyllabusDTO;
 import com.ScheduleMaker.ScheduleMaker.DataTransferObjects.TopicDTO;
+import com.ScheduleMaker.ScheduleMaker.Entities.Schedule;
+import com.ScheduleMaker.ScheduleMaker.Entities.ScheduleStatus;
+import com.ScheduleMaker.ScheduleMaker.Entities.Subject;
+import com.ScheduleMaker.ScheduleMaker.Entities.Topic;
+import com.ScheduleMaker.ScheduleMaker.Entities.User;
 import com.ScheduleMaker.ScheduleMaker.Helpers.AiResponseParserHelper;
+import com.ScheduleMaker.ScheduleMaker.Helpers.GetCurrentUser;
 import com.ScheduleMaker.ScheduleMaker.Services.GeminiService;
+import com.ScheduleMaker.ScheduleMaker.Services.ScheduleServices;
 
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import org.springframework.http.HttpStatus;
@@ -17,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 
@@ -25,9 +37,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class DefaultController {
 
     private final GeminiService geminiService;
+    private final ScheduleServices scheduleServices;
+    private final GetCurrentUser getCurrentUser;
 
-    public DefaultController(GeminiService geminiService) {
+    public DefaultController(GeminiService geminiService,ScheduleServices scheduleServices,GetCurrentUser getCurrentUser) {
         this.geminiService = geminiService;
+        this.scheduleServices=scheduleServices;
+        this.getCurrentUser=getCurrentUser;
     }
 
 
@@ -38,10 +54,11 @@ public class DefaultController {
     public ResponseEntity<String> testMethod() {
         return new ResponseEntity<>("All good",HttpStatus.OK);
     }
-    @PostMapping("/topics")
+    @GetMapping("/topics")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<ArrayList<TopicDTO>> getTopicsFromSubName(@RequestParam String subName) {
-        String syllabusText="";
+    public ResponseEntity<ArrayList<TopicDTO>> getTopicsFromSubNameAndSyllabus(@RequestBody SubjectNameAndSyllabusDTO param) {
+        String subName=param.getSubjectName();
+        String syllabusText=param.getSubjectSyllabus();
         String prompt = "You are an academic syllabus and skill-curriculum analyzer. You will be given a \r\n" + //
                         "subject or hobby name, and OPTIONALLY raw syllabus text. Break the subject down \r\n" + //
                         "into a structured, ordered list of study/practice topics.\r\n" + //
@@ -99,10 +116,8 @@ public class DefaultController {
                         "Subject/Hobby: " + subName + "\r\n" + //
                         "Syllabus text (may be empty): " + syllabusText + "\r\n" + //
                         "Return the topics JSON as specified.";
-        System.out.println("here");
         Mono<String> response = ask(prompt);
         String aiResponse = response.block();
-        System.out.println(aiResponse);
         if (aiResponse != null) {
             ArrayList<TopicDTO> topics = AiResponseParserHelper.parseTopics(aiResponse);
             return new ResponseEntity<>(topics, HttpStatus.OK);
@@ -113,5 +128,50 @@ public class DefaultController {
     private Mono<String> ask(@RequestParam String question) {
         return geminiService.generate(question);  
     }
-
+    @PostMapping("/saveSchedule")
+    public ResponseEntity<String> putScheduleInDB(@RequestBody GetScheduleFromUserDTO userSchedule) {
+        ArrayList<Subject> subs=new ArrayList<>();
+        User user=getCurrentUser.loggedInUser();
+        Schedule scheduleToSave=Schedule.builder()
+                                        .dailyAvailableHours(userSchedule.getDailyAvailableHours())
+                                        .endDate(LocalDate.parse(userSchedule.getEndDate()))
+                                        .startDate(LocalDate.parse(userSchedule.getStartDate()))
+                                        .name(userSchedule.getName())
+                                        .status(ScheduleStatus.ACTIVE)
+                                        .subjects(subs)
+                                        .user(user)
+                                        .build();
+        Double totalHoursLeft=(scheduleToSave.getDailyAvailableHours()*(scheduleToSave.getStartDate().datesUntil(scheduleToSave.getEndDate())).count())-userSchedule.getTotalHoursUsedInMin();
+        Integer totalFamiliarity=userSchedule.getTotalFamiliarityForSubjects();
+        System.out.println(totalHoursLeft);
+        for(SubjectDTO sdto:userSchedule.getSubjects()){
+            Double extraTimePerSub=totalHoursLeft/totalFamiliarity*sdto.getSelfRatedFamiliarity();
+            Subject subToAdd=Subject.builder()
+                                    .name(sdto.getName())
+                                    .selfRatedFamiliarity(sdto.getSelfRatedFamiliarity())
+                                    .topics(new ArrayList<>())
+                                    .schedule(scheduleToSave)
+                                    .build();
+            Integer subTotalTopicPrirority=sdto.getTotalPriority();
+            for(TopicDTO tpdto:sdto.getTopics()){
+                Topic topic=Topic.builder()
+                                 .name(tpdto.getTopicName())
+                                 .daysPending(0)
+                                 .basePriority(tpdto.getBasePriority())
+                                 .hoursCompleted(0.0)
+                                 .minHours(tpdto.getMinHours())
+                                 .maxHours(tpdto.getMinHours()+(extraTimePerSub/subTotalTopicPrirority*tpdto.getBasePriority()))
+                                 .orderIndex(tpdto.getOrderIndex())
+                                 .subject(subToAdd)
+                                 .build();
+                subToAdd.getTopics().add(topic);
+            }
+            scheduleToSave.getSubjects().add(subToAdd);
+            
+        }
+        scheduleServices.saveSchedule(scheduleToSave);
+        return new ResponseEntity<>("Done",HttpStatus.OK);
+    }
+    
+    
 }
